@@ -20,7 +20,7 @@ public class Main {
     public static ArrayList<Integer> check(int column, int row) {
         boolean[] tf = new boolean[9];
         Arrays.fill(tf, true);
-        ArrayList<Integer> num = new ArrayList<Integer>();
+        ArrayList<Integer> num = new ArrayList<>();
 
         //3x3 부분 스도쿠를 찾기 위한 변수 초기화
         int col_new = (column / 3) * 3;
@@ -56,21 +56,20 @@ public class Main {
             System.out.println(sb);
             System.exit(0);
         }
-        for (Zero z : zero) {
-            num = check(z.column, z.row);
-            for (Integer i : num) {
-                sudoku[z.row][z.column] = i;
-                backTracking(cnt+1);
-                sudoku[z.row][z.column] = 0;
-            }
+        Zero z=zero.get(cnt);
+        num = check(z.column, z.row);
+        for (Integer i : num) {
+            sudoku[z.row][z.column] = i;
+            backTracking(cnt+1);
+            sudoku[z.row][z.column] = 0;
         }
     }
-
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Zero z;
         String[] str;
+        
         for (int i=0;i<9;i++) {
             str = br.readLine().split(" ");
             for (int j=0;j<9;j++) {
