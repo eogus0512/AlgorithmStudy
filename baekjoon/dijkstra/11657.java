@@ -17,9 +17,8 @@ class Node{
 }
 
 public class Main {
-    static StringBuilder sb = new StringBuilder();
     static ArrayList<Node> list = new ArrayList<>();
-    static int[] distance;
+    static long[] distance;
     private static int INF = Integer.MAX_VALUE;
 
     public static boolean bellmanford(int start, int N, int M) {
@@ -50,7 +49,7 @@ public class Main {
         int N = Integer.parseInt(str[0]);
         int M = Integer.parseInt(str[1]);
 
-        distance = new int[N+1];
+        distance = new long[N+1];
         Arrays.fill(distance, INF);
 
         for (int i=0;i<M;i++) {
@@ -62,17 +61,15 @@ public class Main {
         }
 
         if(!bellmanford(1, N, M)) {
-            sb.append(-1 + "\n");
+            System.out.println(-1);
         } else {
             for (int i=2;i<=N;i++) {
                 if (distance[i]==INF) {
-                    sb.append(-1 + "\n");
+                    System.out.println(-1);
                 } else {
-                    sb.append(distance[i] + "\n");
+                    System.out.println(distance[i]);
                 }
             }
         }
-        System.out.print(sb);
     }
 }
-
