@@ -1,64 +1,67 @@
+#인구이동
+#국경선 열리는지 판단(canMove) -> 열리면 인구 갱신(Move)
 import sys
-input = sys.stdin.readline
 from collections import deque
+input = sys.stdin.readline
 n, l, r = map(int, input().split())
-land = []
+grid = []
 dy, dx = [-1, 1, 0, 0], [0, 0, -1, 1]
 INF = int(1e9)
+q = deque()
 res = 0
 
-# 인구 이동 횟수를 구하는 문제임
+def check():
+    for i in range(n):
+        for j in range(n):
+            flag = False
+            if i != n-1:
+                if l <= abs(grid[i][j]-grid[i+1][j]) <= r:
+                    flag = True
+            if j != n-1:
+                if l <= abs(grid[i][j+1]-grid[i][j]) <= r:
+                    flag = True
+            if flag == True:
+                q.append((i, j))
+    if not q:
+        return False
+    return True
 
-def move(n, l, r): # 이동할 수 있는 영역이 있는지 확인
-    flag = False
-    for i in range(n-1):
-        for j in range(n-1):
-            diffR = abs(land[i][j] - land[i][j+1])
-            diffD = abs(land[i][j] - land[i+1][j])
-            if l <= diffR <= r or l <= diffD <= r:
-                return True
-    for i in range(n-1): # 마지막 행 체크
-        if l <= abs(land[n-1][i] - land[n-1][i+1]) <= r:
-            return True
-    return False
-
-def bfs(y, x, l, r, n):
+def bfs(y, x, dist):
+    country_cnt = 1 # 국가 수
+    country = [] # 국가
+    country.append((y, x))
+    p_cnt = grid[y][x] # 총 인구
     dist[y][x] = 0
-    total = land[y][x] # 인구 총합
-    nation_cnt = 1 # 국가 수
-    nation = deque() # 국가 위치 (마지막에 평균값으로 값 바꿀 때 사용)
-    nation.append((y, x))
-    q = deque()
-    q.append((y, x))
-    while q:
-        y, x = q.popleft()
+
+    qu = deque()
+    qu.append((y, x))
+    while qu:
+        y, x = qu.popleft()
         for i in range(4):
             ny = y + dy[i]
             nx = x + dx[i]
             if ny < 0 or nx < 0 or ny >= n or nx >= n:
                 continue
-            if dist[ny][nx] == INF and l <= abs(land[ny][nx] - land[y][x]) <= r:
-                nation_cnt += 1
-                total += land[ny][nx]
-                nation.append((ny, nx))
-                q.append((ny, nx))
-                dist[ny][nx] = dist[y][x] + 1
-    
-    average_cnt = total // nation_cnt # 평균 인구수
-    while nation: 
-        y, x = nation.popleft()
-        land[y][x] = average_cnt # 국경선 열린 국가들의 인구값 변경
-            
+            if dist[ny][nx] == INF and l <= abs(grid[ny][nx]-grid[y][x]) <= r:
+                dist[ny][nx] = dist[y][x]+1
+                country.append((ny, nx))
+                country_cnt += 1
+                p_cnt += grid[ny][nx]
+                qu.append((ny, nx))
+
+    avg_cnt = p_cnt // country_cnt # 평균 인구
+    while country: # 인구 갱신
+        y, x = country.pop()
+        grid[y][x] = avg_cnt
+
 for _ in range(n):
-    land.append(list(map(int, input().split())))
+    grid.append(list(map(int, input().split())))
 
-while move(n, l, r):
+while check():
     dist = [[INF] * n for _ in range(n)]
-    res += 1 # 인구이동 횟수 +1
-
-    for i in range(n):
-        for j in range(n):
-            if dist[i][j] == INF:
-                bfs(i, j, l, r, n)
-    
+    res += 1
+    while q:
+        y, x = q.popleft()
+        if dist[y][x] == INF:
+            bfs(y, x, dist)
 print(res)
