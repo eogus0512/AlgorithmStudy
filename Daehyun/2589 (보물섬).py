@@ -1,7 +1,9 @@
 from collections import deque
+import sys
+input = sys.stdin.readline
 
-n, m=map(int, input().split())
-map=[list(input()) for _ in range(n)]
+n, m=map(int, input().strip().split())
+map = [list(input().rstrip()) for _ in range(n)]
 
 dx=[0, 0, 1, -1]
 dy=[1, -1, 0, 0]
