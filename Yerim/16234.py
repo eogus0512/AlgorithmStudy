@@ -24,7 +24,6 @@ def bfs(a,b):
                     visited[nx][ny] = 1
                     queue.append((nx,ny))
                     res.append((nx,ny))
-       
     return res
             
 result = 0
