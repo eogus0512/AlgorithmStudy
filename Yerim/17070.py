@@ -8,12 +8,10 @@ dp = [[[0] * n for _ in range(n)] for _ in range(3)]
 
 dp[0][0][1] = 1 # 파이프 시작 위치 
 
-
-
 for i in range(0, n):
     for j in range(2, n) :
         # 대각선 (대각선은 가로, 세로, 대각선 모두 움직임 가능)
-        if graph[i][j] == 0 and graph[i-1][j] == 0 and graph[i][j-1] == 0 :
+        if graph[i][j] == 0 and graph[i-1][j] == 0 and graph[i][j-1] == 0:
             dp[2][i][j] = dp[0][i-1][j-1] + dp[1][i-1][j-1] + dp[2][i-1][j-1]
 
         if graph[i][j] == 0 :
