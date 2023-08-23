@@ -1,77 +1,70 @@
-#상어 초등학교
+# 상어 초등학교
+'''
+1. 빈칸중에 인접 like 학생 수가 높은 곳으로
+2. 인접칸 중 빈칸이 많은 곳.
+3. 행, 열 번호가 작은 순으로 (행 우선)
+'''
+
 import sys
 input = sys.stdin.readline
-
 n = int(input())
-student = []
-grid = [[-1] * n for _ in range(n)]
+
+grid = [[0] * n for _ in range(n)] # 앉을 자리
+like = dict() # 각 학생별 좋아하는 학생
+student = [] # 학생 앉을 순으로
 dy, dx = [-1, 1, 0, 0], [0, 0, -1, 1]
-q = [] # 학생 위치
+for _ in range(n*n):
+    s, a, b, c, d = map(int, input().split())
+    student.append(s)
+    like[s] = [a, b, c, d]
+
+for i in range(n*n):
+    s = student[i] # 현재 앉을 학생
+    like_max = -1
+    blank_max = -1
+    next_pos = [0, 0] # 앉을 위치
+    for a in range(n):
+        for b in range(n):
+            if grid[a][b] == 0:
+                like_cnt = 0
+                blank_cnt = 0
+                for k in range(4):
+                    ny = a + dy[k]
+                    nx = b + dx[k]
+                    if ny < 0 or ny >= n or nx < 0 or nx >= n:
+                        continue
+                    if grid[ny][nx] in like[s]:
+                        like_cnt += 1
+                    elif grid[ny][nx] == 0:
+                        blank_cnt += 1
+                if like_cnt > like_max:
+                    next_pos[0], next_pos[1] = a, b
+                    like_max = like_cnt
+                    blank_max = blank_cnt
+                elif like_cnt == like_max:
+                    if blank_cnt > blank_max:
+                        next_pos[0], next_pos[1] = a, b
+                        blank_max = blank_cnt
+
+    grid[next_pos[0]][next_pos[1]] = s # 학생 앉히기
+
+score = [0, 1, 10, 100, 1000]
 res = 0
 
-for i in range(n*n):
-    student.append(list(map(int, input().split())))
-
-
-for i in range(n*n):
-    cur = [-1, -1] # 이번 학생이 앉을 위치
-
-    # 첫칸부터 확인해야 함, like_cnt, blank_cnt 를 0으로 시작하면 틀림
-    like_cnt = -1
-    blank_cnt = -1
-    for r in range(n):
-        for c in range(n):
-            if grid[r][c] != -1: # 자리 있음.
+for i in range(n):
+    for j in range(n):
+        s = grid[i][j]
+        count = 0 # 좋아하는 학생 수
+        for k in range(4):
+            ny = i + dy[k]
+            nx = j + dx[k]
+            if ny < 0 or ny >= n or nx < 0 or nx >= n:
                 continue
-            # 현재 칸 기준 상하좌우, 좋아하는 학생, 빈칸 수
-            like = 0
-            blank = 0
-            for j in range(4):
-                ny = r + dy[j]
-                nx = c + dx[j]
-
-                if ny < 0 or nx < 0 or ny >= n or nx >= n:
-                    continue
-                if grid[ny][nx] in student[i][1:]:
-                    like += 1
-                if grid[ny][nx] == -1:
-                    blank += 1
-
-            if like_cnt < like: # 1번 조건 (좋아하는 학생 수)
-                like_cnt = like
-                blank_cnt = blank
-                cur[0], cur[1] = r, c
-            elif like_cnt == like:
-                if blank > blank_cnt: # 2번 조건 (인접 빈칸 수)
-                    blank_cnt = blank
-                    cur[0], cur[1] = r, c
-            # 3번 조건은 행, 열 순으로 탐색하기 때문에 자동으로 만족
-
-    grid[cur[0]][cur[1]] = student[i][0]
-    q.append((cur[0], cur[1], i)) # 배정한 위치(y, x) + 순서
-
-while q:
-    # 위치(y, x), 순서(k)
-    y, x, k = q.pop()
-    count = 0
-    for i in range(4): # 현재 위치 기준, 상하좌우 좋아하는 학생 수 count
-        ny = y + dy[i]
-        nx = x + dx[i]
-        if ny < 0 or nx < 0 or ny >= n or nx >= n:
-            continue
-        if grid[ny][nx] in student[k][1:]:
-            count += 1
-
-    # 점수 계산
-    if count == 1:
-        res += 1
-    elif count == 2:
-        res += 10
-    elif count == 3:
-        res += 100
-    elif count == 4:
-        res += 1000
+            if grid[ny][nx] in like[s]:
+                count += 1
+        res += score[count]
 
 print(res)
+
 
 
